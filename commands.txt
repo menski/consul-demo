@@ -1,0 +1,16 @@
+apk add --no-cache bind-tools curl bash
+dig @consul-1 -p 8600 web.service.consul srv
+curl http://consul-1:8500/v1/catalog/service/web
+
+alias web='dig @consul-1 -p 8600 +short web.service.consul | head -n1'
+while true; do curl http://$(web):8000/etc/hostname; sleep 0.5; done
+
+watch -n 1 curl http://consul-2:8500/v1/health/state/critical
+
+consul kv put hello world
+consul kv get hello
+
+curl http://consul-3:8500/v1/kv/hello
+echo 'd29ybGQ=' | base64 -d; echo
+
+docker-compose exec consul-1 consul lock myapp yes

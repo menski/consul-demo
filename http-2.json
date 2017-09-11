@@ -1,0 +1,15 @@
+{
+    "service": {
+        "name": "web",
+        "address": "http-2",
+        "port": 8000,
+        "checks": [
+            {
+                "name": "HTTP port 8000",
+                "http": "http://http-2:8000",
+                "interval": "5s",
+                "timeout": "1s"
+            }
+        ]
+    }
+}

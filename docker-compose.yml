@@ -1,0 +1,43 @@
+version: '2'
+
+services:
+
+    consul-1:
+        image: consul
+        command: agent -dev -bind=0.0.0.0 -client 0.0.0.0
+        restart: always
+        hostname: consul-1
+        ports:
+            - 8500:8500
+
+    consul-2:
+        image: consul
+        command: agent -dev -join=consul-1 -bind=0.0.0.0 -client 0.0.0.0 -config-dir=/consul
+        restart: always
+        hostname: consul-2
+        volumes:
+            - $PWD/http-1.json:/consul/http-1.json
+
+    consul-3:
+        image: consul
+        command: agent -dev -join=consul-1 -bind=0.0.0.0 -client 0.0.0.0 -config-dir=/consul
+        restart: always
+        hostname: consul-3
+        volumes:
+            - $PWD/http-2.json:/consul/http-2.json
+
+    http-1:
+        image: python
+        hostname: http-1
+        command: python -m http.server
+
+    http-2:
+        image: python
+        hostname: http-2
+        command: python -m http.server
+
+    demo:
+        image: alpine
+        command: tail -f /dev/null
+        volumes:
+            - $PWD/consul:/bin/consul
